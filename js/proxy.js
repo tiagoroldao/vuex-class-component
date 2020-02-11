@@ -229,8 +229,9 @@ function createGettersAndMutationProxyFromState(_a) {
                     get: function () {
                         // When creating local proxies getters doesn't exist on that context, so we have to account
                         // for that.
-                        if ($store.getters) {
-                            return $store.getters[namespacedPath + ("__" + className + "_internal_getter__")](path);
+                        if ($store.rootGetters) {
+                            var getterPath = refineNamespacedPath(cls.prototype.__namespacedPath__) + ("__" + className + "_internal_getter__");
+                            return $store.rootGetters[getterPath](path);
                         }
                         else
                             return $store["__" + className + "_internal_getter__"](path);

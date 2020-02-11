@@ -90,7 +90,7 @@ describe('ExtractVuexModule', () => {
 	it('should extract all properties as state in a function for NuxtUserStore', () => {
 		const { state } = NuxtUserStore.ExtractVuexModule( NuxtUserStore );
 		expect( typeof state ).toBe( "function" );
-		expect( state() ).toEqual({
+		expect( (state as Function)() ).toEqual({
 			firstname: "Michael",
 			lastname: "Olofinjana",
 			speciality: "JavaScript",
