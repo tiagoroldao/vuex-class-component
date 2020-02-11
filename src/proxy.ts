@@ -36,7 +36,7 @@ export function createProxy<T extends typeof VuexModule>( $store :any, cls :T ) 
     // If field is a getter use the normal getter path if not use internal getters.
     if( typeof field === "string" && getterNames.indexOf( field ) > -1 ) {
       return $store.watch( 
-        () => $store.getters[ namespacedPath +  field ],
+        () => $store.rootGetters[ namespacedPath +  field ],
         callback,
         options,
       )
@@ -45,7 +45,7 @@ export function createProxy<T extends typeof VuexModule>( $store :any, cls :T ) 
     const className = cls.name.toLowerCase();
 
     return $store.watch( 
-      () => $store.getters[ namespacedPath + `__${className}_internal_getter__`]( field ),
+      () => $store.rootGetters[ namespacedPath + `__${className}_internal_getter__`]( field ),
       callback,
       options,
     )
@@ -251,13 +251,13 @@ function createLocalWatchers( cls :VuexModuleConstructor, $store :Map, namespace
 
     if( fieldIsAnExplicitGetter ) {
       $store.watch( 
-        () => $store.getters[ namespacedPath + field ],
+        () => $store.rootGetters[ namespacedPath + field ],
         proxiedWatchFunc,
       )
     }
     else { // This is so we can also watch implicit getters.
       $store.watch( 
-        () => $store.getters[ namespacedPath + `__${className}_internal_getter__` ]( field ),
+        () => $store.rootGetters[ namespacedPath + `__${className}_internal_getter__` ]( field ),
         proxiedWatchFunc,
       )
     }
@@ -439,7 +439,7 @@ function createExplicitMutationsProxy( cls :VuexModuleConstructor, proxy :Map, $
   );
 
   for( let field in mutations ) {
-    proxy[ field ] = ( payload :any ) => commit( namespacedPath + field, payload )
+    proxy[ field ] = ( payload :any ) => commit( namespacedPath + field, payload, { root: true } )
   }
 
 }
@@ -467,7 +467,7 @@ function createGettersAndGetterMutationsProxy({ cls, getters, mutations, proxy, 
       
       Object.defineProperty( proxy, field, {
         get: () => {
-          if( $store.getters ) return $store.getters[ namespacedPath + field ]
+          if( $store.rootGetters ) return $store.rootGetters[ namespacedPath + field ]
           else return $store[ namespacedPath + field ];
         },
         set: ( payload :any ) => $store.commit( namespacedPath + field, payload ),
@@ -481,7 +481,7 @@ function createGettersAndGetterMutationsProxy({ cls, getters, mutations, proxy, 
     
     Object.defineProperty( proxy, field, {
       get: () => { 
-        if( $store.getters ) return $store.getters[ namespacedPath + field ];
+        if( $store.rootGetters ) return $store.rootGetters[ namespacedPath + field ];
         else return $store[ namespacedPath + field ];
       }
     })
