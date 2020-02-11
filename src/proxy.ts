@@ -1,4 +1,4 @@
-import { extractVuexModule } from "./module";
+import { extractVuexModule, getNamespacedPath } from "./module";
 import { VuexModuleConstructor, Map, VuexModule, ProxyWatchers } from "./interfaces";
 import { getClassPath, toCamelCase, refineNamespacedPath } from "./utils";
 
@@ -270,7 +270,8 @@ function createSubModuleProxy( $store :Map, cls:VuexModuleConstructor, proxy :Ma
   const store = cls.prototype.__store_cache__ || $store;
   for( let field in modules ) {
     const subModuleClass = cls.prototype.__submodules_cache__[ field ] as VuexModuleConstructor;
-    subModuleClass.prototype.__namespacedPath__ = cls.prototype.__namespacedPath__ + "/" + subModuleClass.prototype.__namespacedPath__;
+    const namespacedPath = getNamespacedPath(subModuleClass);
+    subModuleClass.prototype.__namespacedPath__ = cls.prototype.__namespacedPath__ + "/" + namespacedPath;
     proxy[ field ] = createProxy( store, subModuleClass );
   }
 

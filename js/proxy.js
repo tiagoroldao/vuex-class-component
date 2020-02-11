@@ -1,4 +1,4 @@
-import { extractVuexModule } from "./module";
+import { extractVuexModule, getNamespacedPath } from "./module";
 import { getClassPath, toCamelCase, refineNamespacedPath } from "./utils";
 export function clearProxyCache(cls) { }
 export function createProxy($store, cls) {
@@ -195,7 +195,8 @@ function createSubModuleProxy($store, cls, proxy, modules) {
     var store = cls.prototype.__store_cache__ || $store;
     for (var field in modules) {
         var subModuleClass = cls.prototype.__submodules_cache__[field];
-        subModuleClass.prototype.__namespacedPath__ = cls.prototype.__namespacedPath__ + "/" + subModuleClass.prototype.__namespacedPath__;
+        var namespacedPath = getNamespacedPath(subModuleClass);
+        subModuleClass.prototype.__namespacedPath__ = cls.prototype.__namespacedPath__ + "/" + namespacedPath;
         proxy[field] = createProxy(store, subModuleClass);
     }
 }
