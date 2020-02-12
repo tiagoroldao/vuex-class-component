@@ -245,7 +245,7 @@ function createGettersAndMutationProxyFromState(_a) {
                         else {
                             // We must be creating local proxies hence, $store.commit doesn't exist
                             var store = cls.prototype.__context_store__;
-                            store.commit("__" + className + "_internal_mutator__", { field: path, payload: payload });
+                            store.commit("__" + className + "_internal_mutator__", { field: path, payload: payload }, { root: true });
                         }
                     },
                 });
@@ -316,7 +316,7 @@ function __createGettersAndMutationProxyFromState(_a) {
                     else {
                         // We must be creating local proxies hence, $store.commit doesn't exist
                         var store = cls.prototype.__context_store__;
-                        store.commit("__" + className + "_internal_mutator__", { field: field, payload: payload });
+                        store.commit("__" + className + "_internal_mutator__", { field: field, payload: payload }, { root: true });
                     }
                 },
             });
@@ -374,7 +374,7 @@ function createGettersAndGetterMutationsProxy(_a) {
                     else
                         return $store[namespacedPath + field];
                 },
-                set: function (payload) { return $store.commit(namespacedPath + field, payload); },
+                set: function (payload) { return $store.commit(namespacedPath + field, payload, { root: true }); },
             });
             return "continue";
         }

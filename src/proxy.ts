@@ -324,7 +324,7 @@ function createGettersAndMutationProxyFromState({ cls, proxy, state, $store, nam
             else {
               // We must be creating local proxies hence, $store.commit doesn't exist
               const store = cls.prototype.__context_store__!;
-              store.commit( `__${className}_internal_mutator__`, { field: path, payload })
+              store.commit( `__${className}_internal_mutator__`, { field: path, payload }, { root: true })
             }
           },
         })
@@ -405,7 +405,7 @@ function __createGettersAndMutationProxyFromState({ cls, proxy, state, $store, n
           else {
             // We must be creating local proxies hence, $store.commit doesn't exist
             const store = cls.prototype.__context_store__!;
-            store.commit( `__${className}_internal_mutator__`, { field, payload })
+            store.commit( `__${className}_internal_mutator__`, { field, payload }, { root: true })
           }
         },
       })
@@ -473,7 +473,7 @@ function createGettersAndGetterMutationsProxy({ cls, getters, mutations, proxy, 
           if( storeGetters ) return storeGetters[ namespacedPath + field ]
           else return $store[ namespacedPath + field ];
         },
-        set: ( payload :any ) => $store.commit( namespacedPath + field, payload ),
+        set: ( payload :any ) => $store.commit( namespacedPath + field, payload, { root: true } ),
       })
       
       continue;
