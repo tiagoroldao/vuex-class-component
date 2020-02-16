@@ -374,18 +374,18 @@ function createGettersAndGetterMutationsProxy(_a) {
         if (fieldHasGetterAndMutation) {
             Object.defineProperty(proxy, field, {
                 get: function () {
-                    var storeGetters = $store.rootGetters || $store.getters;
+                    var storeGetters = namespacedPath ? $store.rootGetters : $store.getters;
                     if (storeGetters)
                         return storeGetters[namespacedPath + field];
                     else
                         return $store[namespacedPath + field];
                 },
-                set: function (payload) { return $store.commit(namespacedPath + field, payload, { root: true }); },
+                set: function (payload) { return $store.commit(namespacedPath + field, payload, { root: !!namespacedPath }); },
             });
             return "continue";
         }
         // The field has only a getter.
-        if (proxy[field])
+        if (Object.prototype.hasOwnProperty.call(proxy, field))
             return "continue";
         Object.defineProperty(proxy, field, {
             get: function () {

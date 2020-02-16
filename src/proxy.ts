@@ -314,7 +314,6 @@ function createGettersAndMutationProxyFromState({ cls, proxy, state, $store, nam
             const getters = $store.rootGetters || $store.getters;
             if( getters ) {
               const getterPath = refineNamespacedPath(cls.prototype.__namespacedPath__) + `__${className}_internal_getter__`;
-              
               return getters[ getterPath ]( path )
             }else return $store[ `__${className}_internal_getter__` ]( path ) 
           },
@@ -469,18 +468,18 @@ function createGettersAndGetterMutationsProxy({ cls, getters, mutations, proxy, 
       
       Object.defineProperty( proxy, field, {
         get: () => {
-          const storeGetters = $store.rootGetters || $store.getters;
+          const storeGetters = namespacedPath ? $store.rootGetters : $store.getters;
           if( storeGetters ) return storeGetters[ namespacedPath + field ]
           else return $store[ namespacedPath + field ];
         },
-        set: ( payload :any ) => $store.commit( namespacedPath + field, payload, { root: true } ),
+        set: ( payload :any ) => $store.commit( namespacedPath + field, payload, { root: !!namespacedPath } ),
       })
       
       continue;
     }
     
     // The field has only a getter.
-    if( proxy[ field ] ) continue;
+    if( Object.prototype.hasOwnProperty.call(proxy, field) ) continue;
     
     Object.defineProperty( proxy, field, {
       get: () => { 
